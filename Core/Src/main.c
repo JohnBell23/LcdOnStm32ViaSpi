@@ -23,6 +23,7 @@
 /* USER CODE BEGIN Includes */
 #include "st7735.h"
 #include "fonts.h"
+#include "stdio.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -99,9 +100,12 @@ int main(void)
   ST7735_Init();  // ST7735 init method, to be called first
   ST7735_FillScreen(ST7735_BLUE); // set all blue
 
-  ST7735_WriteString(20, 40, "hello world", Font_7x10, ST7735_WHITE, ST7735_BLUE); // write a string
+  ST7735_WriteString(5, 5, "Timer", Font_7x10, ST7735_WHITE, ST7735_BLUE);
+
+  char number[20];
 
   uint32_t counter=0;
+  uint32_t numberCount=0;
 
   /* USER CODE END 2 */
 
@@ -111,6 +115,11 @@ int main(void)
   {
     if (counter++ %10==0){
       HAL_GPIO_TogglePin(GPIOA, LD2_Pin);  // toggle LED
+    }
+
+    if (counter%10==0){
+      sprintf(number, "%8lu", (unsigned long)numberCount++);
+      ST7735_WriteString(10, 60, number, Font_11x18, ST7735_WHITE, ST7735_BLUE);
     }
 
     HAL_Delay(50);
