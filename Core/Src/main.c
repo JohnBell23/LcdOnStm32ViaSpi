@@ -24,6 +24,7 @@
 #include "st7735.h"
 #include "fonts.h"
 #include "stdio.h"
+#include "math.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -98,14 +99,39 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   ST7735_Init();  // ST7735 init method, to be called first
-  ST7735_FillScreen(ST7735_BLUE); // set all blue
+  ST7735_FillScreen(ST7735_COLOR565(27,30,250));
 
-  ST7735_WriteString(5, 5, "Timer", Font_7x10, ST7735_WHITE, ST7735_BLUE);
+  for (int y=0;y<128;y++){
+    ST7735_DrawPixel(128/2, y, ST7735_COLOR565(254,254,58));
+    ST7735_DrawPixel(128/2-1, y, ST7735_COLOR565(254,254,58));
+    ST7735_DrawPixel(128/2+1, y, ST7735_COLOR565(254,254,58));
+  }
 
-  char number[20];
+  for (int x=0;x<128;x++){
+    ST7735_DrawPixel(x, 128/2, ST7735_COLOR565(254,254,58));
+    ST7735_DrawPixel(x, 128/2-1, ST7735_COLOR565(254,254,58));
+    ST7735_DrawPixel(x, 128/2+1, ST7735_COLOR565(254,254,58));
+  }
+
+  //     0 .. 180
+  // x   64 .. 128
+  //->   (x-64)/64*180
+  for (int x=0;x<128;x++){
+    double rad = (x-64.0)/64.0*180.0 * 3.1415927/180;
+    double sinVal=sin(rad);
+    ST7735_DrawPixel(x, (int)(sinVal*-64.0+64), ST7735_COLOR565(254,254,58));
+    ST7735_DrawPixel(x+1, (int)(sinVal*-64.0+64), ST7735_COLOR565(254,254,58));
+    ST7735_DrawPixel(x-1, (int)(sinVal*-64.0+64), ST7735_COLOR565(254,254,58));
+  }
+
+  /*
+  ST7735_DrawPixel(0, 0, ST7735_CYAN);
+  ST7735_DrawPixel(127, 0, ST7735_CYAN);
+  ST7735_DrawPixel(127, 127, ST7735_CYAN);
+  ST7735_DrawPixel(0, 127, ST7735_CYAN);
+  */
 
   uint32_t counter=0;
-  uint32_t numberCount=0;
 
   /* USER CODE END 2 */
 
@@ -117,10 +143,6 @@ int main(void)
       HAL_GPIO_TogglePin(GPIOA, LD2_Pin);  // toggle LED
     }
 
-    if (counter%10==0){
-      sprintf(number, "%8lu", (unsigned long)numberCount++);
-      ST7735_WriteString(10, 60, number, Font_11x18, ST7735_WHITE, ST7735_BLUE);
-    }
 
     HAL_Delay(50);
 
